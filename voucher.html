@@ -12,20 +12,31 @@
     #voucher-screen { position: fixed; inset: 0; display: flex; justify-content: center; align-items: center; z-index: 10001; }
     .success-container { display: flex; flex-direction: column; align-items: center; max-width: 90%; }
     
-    /* CORREÇÃO DE TAMANHO PARA MOBILE */
     .success-container img.voucher-image {
-      height: 80vh; /* Ocupa 80% da altura da tela */
-      width: auto;   /* Largura se ajusta para manter a proporção */
-      max-width: 100%; /* Garante que não ultrapasse a largura da tela */
+      height: 80vh;
+      width: auto;
+      max-width: 100%;
       object-fit: contain;
       border-radius: 16px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-      margin-bottom: 9px;
+      margin-bottom: 15px; /* Um valor base para telas maiores */
     }
 
     .voucher-box { width: 100%; max-width: 400px; background: rgba(255, 255, 255, 0.95); padding: 20px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); text-align: center; }
     .voucher-box h2 { font-size: 16px; color: #555; font-weight: normal; margin-bottom: 8px; }
     .voucher-code { font-family: 'Courier New', Courier, monospace; font-size: 28px; font-weight: bold; color: #0b3d91; letter-spacing: 2px; border: 2px dashed #ccc; padding: 10px 15px; border-radius: 8px; background-color: #f9f9f9; word-break: break-all; }
+
+    /* =============================================== */
+    /* AJUSTE FINO E FINAL PARA TELAS DE CELULAR       */
+    /* =============================================== */
+    @media (max-width: 600px) {
+      .success-container img.voucher-image {
+        margin-bottom: 5px; /* Reduz ainda mais a margem no celular */
+      }
+      .voucher-box {
+        margin-top: -10px; /* Puxa a caixa do código para cima */
+      }
+    }
   </style>
 </head>
 <body>
@@ -43,7 +54,6 @@
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const params = new URLSearchParams(window.location.search);
-      // CORREÇÃO: Procura por 'cupom' com letra minúscula
       const cupom = params.get('cupom');
 
       if (cupom) {
