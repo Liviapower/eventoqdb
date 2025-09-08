@@ -6,7 +6,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
  
   <style>
-    /* SEU CSS - INTACTO */
+    /* SEU CSS ATUAL - INTACTO */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { min-height: 100vh; display: flex; justify-content: center; align-items: center; font-family: 'circular', sans-serif; background: url('estrelado.jpg') no-repeat center center; background-size: cover; background-attachment: fixed; overflow: hidden; }
     .hidden { visibility: hidden; opacity: 0; pointer-events: none; transition: visibility 0s 0.5s, opacity 0.5s ease; }
@@ -14,24 +14,33 @@
     #carta-imagem { height: 80vh; aspect-ratio: 3/4; background: url('hp.png') no-repeat center center/contain; border: none; transition: transform 0.3s ease; }
     #tela-inicial:hover #carta-imagem { transform: scale(1.02); }
     
-    /* NOVO: Estilos para a animação de brilhos */
-    .sparkle {
+    /* --- NOVA ANIMAÇÃO: POEIRA MÁGICA --- */
+    .magic-dust {
       position: fixed;
-      width: 10px;
+      top: 50%;
+      left: 50%;
+      width: 10px; /* Tamanho inicial pequeno */
       height: 10px;
-      background-color: #ffd700; /* Cor dourada */
+      background: radial-gradient(circle, rgba(255,223,150,0.8) 0%, rgba(255,215,0,0) 70%); /* Gradiente de brilho */
       border-radius: 50%;
       pointer-events: none;
       z-index: 9999;
       opacity: 0;
-      /* Animação que faz o brilho aparecer e sumir */
-      animation: sparkle-animation 0.8s ease-out;
+      /* A animação que faz a explosão */
+      animation: magic-burst 1s ease-out forwards;
     }
-    @keyframes sparkle-animation {
-      0% { transform: scale(0.5) translate(0, 0); opacity: 0.5; }
-      50% { transform: scale(1.2) translate(10px, -10px); opacity: 1; }
-      100% { transform: scale(0) translate(20px, -20px); opacity: 0; }
+
+    @keyframes magic-burst {
+      0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 1;
+      }
+      100% {
+        transform: translate(-50%, -50%) scale(200); /* Aumenta muito de tamanho */
+        opacity: 0;
+      }
     }
+    /* --- FIM DA NOVA ANIMAÇÃO --- */
 
     /* Resto do seu CSS - INTACTO */
     .form-wrapper { background: rgba(255, 255, 255, 0.95); padding: 40px; border-radius: 16px; width: 100%; max-width: 420px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); text-align: center; transition: opacity 0.8s ease; }
@@ -81,12 +90,11 @@
   </div>
 
   <script>
-    // --- LÓGICA DE UI E VALIDAÇÃO ---
+    // --- SELETORES DE ELEMENTOS ---
     const telaInicial = document.getElementById('tela-inicial');
     const formWrapper = document.getElementById('form-wrapper');
     const voucherScreen = document.getElementById('voucher-screen');
     const voucherCodeDisplay = document.getElementById('voucher-code-display');
-    // const duracaoGif = 5000; // Removido
     const form = document.getElementById('promoForm');
     const nomeInput = document.getElementById('nome');
     const cpfInput = document.getElementById('cpf');
@@ -99,44 +107,30 @@
       if (cupomSalvo) {
         telaInicial.classList.add('hidden');
         formWrapper.classList.add('hidden');
-        // CORREÇÃO: Removida a linha que causava o erro
         voucherCodeDisplay.textContent = cupomSalvo;
         voucherScreen.classList.remove('hidden');
       }
     }
     document.addEventListener('DOMContentLoaded', verificarStatusDoCupom);
 
-    // --- LÓGICA DO FLUXO NORMAL (CLIQUE NA CARTA) COM BRILHOS ---
-    telaInicial.addEventListener('click', (e) => {
-      // 1. Esconde a carta para a transição
+    // --- LÓGICA DO CLIQUE COM A NOVA ANIMAÇÃO ---
+    telaInicial.addEventListener('click', () => {
+      // 1. Esconde a carta
       telaInicial.style.opacity = '0';
       setTimeout(() => {
         telaInicial.classList.add('hidden');
       }, 500);
 
-      // 2. Cria os brilhos
-      for (let i = 0; i < 20; i++) { // Aumentei para 20 brilhos
-        const sparkle = document.createElement('div');
-        sparkle.className = 'sparkle';
-        
-        // Posiciona perto do clique com aleatoriedade
-        const offsetX = (Math.random() - 0.5) * 200;
-        const offsetY = (Math.random() - 0.5) * 200;
-        sparkle.style.left = `${e.clientX + offsetX}px`;
-        sparkle.style.top = `${e.clientY + offsetY}px`;
-        
-        document.body.appendChild(sparkle);
-        
-        // Remove o brilho depois que a animação termina
-        setTimeout(() => {
-          sparkle.remove();
-        }, 800);
-      }
+      // 2. Cria a explosão de poeira mágica
+      const dust = document.createElement('div');
+      dust.className = 'magic-dust';
+      document.body.appendChild(dust);
 
-      // 3. Mostra o formulário após um pequeno atraso
+      // 3. Mostra o formulário e remove a poeira após a animação
       setTimeout(() => {
         formWrapper.classList.remove('hidden');
-      }, 600); // Atraso um pouco maior para dar tempo dos brilhos aparecerem
+        dust.remove(); // Limpa o elemento da poeira da tela
+      }, 1000); // 1 segundo, a duração da animação
     });
 
     // --- FUNÇÕES DE VALIDAÇÃO (SEM ALTERAÇÃO) ---
@@ -145,7 +139,7 @@
     function checkFormValidity(){const a=nomeInput.value.trim()!=='',b=validarCPF(cpfInput.value),c=politicaCheckbox.checked;submitButton.disabled=!(a&&b&&c)}
     nomeInput.addEventListener('input',checkFormValidity);politicaCheckbox.addEventListener('change',checkFormValidity);
 
-    // --- LÓGICA DE ENVIO FINAL E CORRIGIDA (SEM ALTERAÇÃO) ---
+    // --- LÓGICA DE ENVIO (SEM ALTERAÇÃO) ---
     const scriptURL = 'https://script.google.com/macros/s/AKfycbzv9kzU8GLDprATQGU_Beo97lFSKOiQ4lm0tr2UVjdeLVoamxkpJRUz29DNYtvs-Q4t/exec';
     form.addEventListener('submit', (e ) => {
       e.preventDefault();
@@ -187,6 +181,7 @@
 
 </body>
 </html>
+
 
 
 
