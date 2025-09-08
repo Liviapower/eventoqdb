@@ -68,7 +68,7 @@
   <div id="tela-inicial"><div id="carta-imagem"></div></div>
   <div id="form-wrapper" class="form-wrapper hidden">
     <h1>Resgate seu Cupom</h1>
-    <form id="promoForm">
+    <form id="promoForm" data-netlify="true">
       <label for="nome">Nome completo *</label>
       <input type="text" id="nome" name="nome" required>
       <label for="cpf">CPF *</label>
@@ -139,48 +139,12 @@
     function checkFormValidity(){const a=nomeInput.value.trim()!=='',b=validarCPF(cpfInput.value),c=politicaCheckbox.checked;submitButton.disabled=!(a&&b&&c)}
     nomeInput.addEventListener('input',checkFormValidity);politicaCheckbox.addEventListener('change',checkFormValidity);
 
-    // --- LÓGICA DE ENVIO (SEM ALTERAÇÃO) ---
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbzv9kzU8GLDprATQGU_Beo97lFSKOiQ4lm0tr2UVjdeLVoamxkpJRUz29DNYtvs-Q4t/exec';
-    form.addEventListener('submit', (e ) => {
-      e.preventDefault();
-      if (submitButton.disabled) return;
-      submitButton.disabled = true;
-      submitButton.textContent = 'Enviando...';
-      const formData = new FormData();
-      const cpfLimpo = cpfInput.value.replace(/\D/g, '');
-      const hashSimples = (parseInt(cpfLimpo.substr(0, 9)) % 10000).toString().padStart(4, '0');
-      const novoCodigo = `QDBHP${hashSimples}`;
-      formData.append('CPF', cpfInput.value);
-      formData.append('NOME', nomeInput.value);
-      formData.append('CUPOM', novoCodigo);
-      fetch(scriptURL, { method: 'POST', body: formData})
-        .then(response => {
-            if (!response.ok) { throw new Error(`Erro de rede: ${response.statusText}`); }
-            return response.json();
-        })
-        .then(data => {
-          if (data.result === 'success') {
-            localStorage.setItem('meuCupomQDBHP', novoCodigo);
-            formWrapper.classList.add('hidden');
-            voucherCodeDisplay.textContent = novoCodigo;
-            voucherScreen.classList.remove('hidden');
-          } else if (data.error === 'CPF_EXISTS') {
-            alert('Este CPF já foi cadastrado e possui um cupom.');
-            submitButton.disabled = false;
-            submitButton.textContent = 'Resgatar meu cupom';
-          } else { throw new Error(data.error || 'Erro desconhecido retornado pelo script.'); }
-        })
-        .catch(error => {
-          console.error('Erro detalhado:', error);
-          alert('Ocorreu um erro ao conectar com o servidor. Por favor, tente novamente.');
-          submitButton.disabled = false;
-          submitButton.textContent = 'Resgatar meu cupom';
-        });
-    });
+ 
   </script>
 
 </body>
 </html>
+
 
 
 
