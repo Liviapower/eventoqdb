@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Resgate Promoção Harry Potter</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="images/favicon.png">
+ 
+  <style>
+    /* Reset básico */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-size: cover;
+      font-family: 'circular', sans-serif;
+      color: #222;
+    }
+
+    h1 {
+      font-size: 22px;
+      margin-bottom: 20px;
+      color: #0b3d91;
+    }
+
+    form label {
+      display: block;
+      text-align: left;
+      margin: 12px 0 5px;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    form input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #aaa;
+      margin-bottom: 15px;
+      font-size: 14px;
+    }
+   
+    .checkbox {
+      font-size: 13px;
+      text-align: left;
+      margin: 15px 0;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      background: #0b3d91;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #092f70;
+    }
+
+    .microcopy {
+      margin-top: 15px;
+      font-size: 12px;
+      color: #444;
+    }
+
+    .erro {
+      color: red;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+
+    .sucesso {
+      color: green;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+
+
+  <!-- Formulário -->
+  <div id="form-wrapper" class="form-wrapper">
+    <h1>Resgate seu Cupom</h1>
+    <form id="promoForm">
+      <label for="nome">Nome completo *</label>
+      <input type="text" id="nome" name="nome" required>
+
+      <label for="cpf">CPF *</label>
+      <input type="text" id="cpf" name="cpf" required maxlength="11">
+
+      <label>
+        <input type="checkbox" id="politica" name="politica" required>
+        Li e concordo com a Política de Privacidade.
+      </label>
+
+      <button type="submit">Resgatar meu cupom</button>
+    </form>
+  </div>
+
+
+  </script>
+
+</body>
+</html>
