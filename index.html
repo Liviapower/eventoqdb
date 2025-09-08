@@ -14,35 +14,9 @@
     #carta-imagem { height: 80vh; aspect-ratio: 3/4; background: url('hp.png') no-repeat center center/contain; border: none; transition: transform 0.3s ease; }
     #tela-inicial:hover #carta-imagem { transform: scale(1.02); }
     
-    /* --- NOVA ANIMAÇÃO: POEIRA MÁGICA --- */
-    .magic-dust {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      width: 10px; /* Tamanho inicial pequeno */
-      height: 10px;
-      background: radial-gradient(circle, rgba(255,223,150,0.8) 0%, rgba(255,215,0,0) 70%); /* Gradiente de brilho */
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 9999;
-      opacity: 0;
-      /* A animação que faz a explosão */
-      animation: magic-burst 1s ease-out forwards;
-    }
+    .magic-dust { position: fixed; top: 50%; left: 50%; width: 10px; height: 10px; background: radial-gradient(circle, rgba(255,223,150,0.8) 0%, rgba(255,215,0,0) 70%); border-radius: 50%; pointer-events: none; z-index: 9999; opacity: 0; animation: magic-burst 1s ease-out forwards; }
+    @keyframes magic-burst { 0% { transform: translate(-50%, -50%) scale(0); opacity: 1; } 100% { transform: translate(-50%, -50%) scale(200); opacity: 0; } }
 
-    @keyframes magic-burst {
-      0% {
-        transform: translate(-50%, -50%) scale(0);
-        opacity: 1;
-      }
-      100% {
-        transform: translate(-50%, -50%) scale(200); /* Aumenta muito de tamanho */
-        opacity: 0;
-      }
-    }
-    /* --- FIM DA NOVA ANIMAÇÃO --- */
-
-    /* Resto do seu CSS - INTACTO */
     .form-wrapper { background: rgba(255, 255, 255, 0.95); padding: 40px; border-radius: 16px; width: 100%; max-width: 420px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); text-align: center; transition: opacity 0.8s ease; }
     h1 { font-size: 22px; margin-bottom: 20px; color: #0b3d91; }
     form label { display: block; text-align: left; margin: 12px 0 5px; font-weight: bold; font-size: 14px; }
@@ -66,19 +40,23 @@
 
   <!-- SEU HTML - INTACTO -->
   <div id="tela-inicial"><div id="carta-imagem"></div></div>
-  <div id="form-wrapper" class="form-wrapper hidden">
+  
+  <!-- MUDANÇA 1: Adicionado "action" ao formulário para evitar o redirecionamento do Netlify -->
+  <form id="promoForm" name="promoForm" data-netlify="true" action="/?success=true" class="form-wrapper hidden">
     <h1>Resgate seu Cupom</h1>
-    <form id="promoForm" data-netlify="true">
-      <label for="nome">Nome completo *</label>
-      <input type="text" id="nome" name="nome" required>
-      <label for="cpf">CPF *</label>
-      <input type="text" id="cpf" name="cpf" required placeholder="000.000.000-00" maxlength="14">
-      <label class="checkbox-label">
-        <input type="checkbox" id="politica" name="politica" required> Li e concordo com a Política de Privacidade.
-      </label>
-      <button type="submit" id="submit-button" disabled>Resgatar meu cupom</button>
-    </form>
-  </div>
+    <!-- MUDANÇA 2: Adicionado campo para o Cupom ser salvo no Netlify -->
+    <input type="hidden" name="CUPOM" id="cupom-hidden-input">
+    
+    <label for="nome">Nome completo *</label>
+    <input type="text" id="nome" name="NOME" required>
+    <label for="cpf">CPF *</label>
+    <input type="text" id="cpf" name="CPF" required placeholder="000.000.000-00" maxlength="14">
+    <label class="checkbox-label">
+      <input type="checkbox" id="politica" name="politica" required> Li e concordo com a Política de Privacidade.
+    </label>
+    <button type="submit" id="submit-button" disabled>Resgatar meu cupom</button>
+  </form>
+
   <div id="voucher-screen" class="hidden">
     <div class="success-container">
       <img src="ENVELOPEVERSO.png" alt="Voucher de 10% de desconto" class="voucher-image">
@@ -92,7 +70,7 @@
   <script>
     // --- SELETORES DE ELEMENTOS ---
     const telaInicial = document.getElementById('tela-inicial');
-    const formWrapper = document.getElementById('form-wrapper');
+    const formWrapper = document.getElementById('promoForm'); // Agora o form é o wrapper
     const voucherScreen = document.getElementById('voucher-screen');
     const voucherCodeDisplay = document.getElementById('voucher-code-display');
     const form = document.getElementById('promoForm');
@@ -100,6 +78,7 @@
     const cpfInput = document.getElementById('cpf');
     const politicaCheckbox = document.getElementById('politica');
     const submitButton = document.getElementById('submit-button');
+    const cupomHiddenInput = document.getElementById('cupom-hidden-input');
 
     // --- LÓGICA ANTI-ATUALIZAÇÃO ---
     function verificarStatusDoCupom() {
@@ -113,24 +92,17 @@
     }
     document.addEventListener('DOMContentLoaded', verificarStatusDoCupom);
 
-    // --- LÓGICA DO CLIQUE COM A NOVA ANIMAÇÃO ---
+    // --- LÓGICA DO CLIQUE COM A ANIMAÇÃO ---
     telaInicial.addEventListener('click', () => {
-      // 1. Esconde a carta
       telaInicial.style.opacity = '0';
-      setTimeout(() => {
-        telaInicial.classList.add('hidden');
-      }, 500);
-
-      // 2. Cria a explosão de poeira mágica
+      setTimeout(() => { telaInicial.classList.add('hidden'); }, 500);
       const dust = document.createElement('div');
       dust.className = 'magic-dust';
       document.body.appendChild(dust);
-
-      // 3. Mostra o formulário e remove a poeira após a animação
       setTimeout(() => {
         formWrapper.classList.remove('hidden');
-        dust.remove(); // Limpa o elemento da poeira da tela
-      }, 1000); // 1 segundo, a duração da animação
+        dust.remove();
+      }, 1000);
     });
 
     // --- FUNÇÕES DE VALIDAÇÃO (SEM ALTERAÇÃO) ---
@@ -139,15 +111,35 @@
     function checkFormValidity(){const a=nomeInput.value.trim()!=='',b=validarCPF(cpfInput.value),c=politicaCheckbox.checked;submitButton.disabled=!(a&&b&&c)}
     nomeInput.addEventListener('input',checkFormValidity);politicaCheckbox.addEventListener('change',checkFormValidity);
 
- 
+    // --- MUDANÇA 3: NOVA LÓGICA DE ENVIO PARA O NETLIFY ---
+    form.addEventListener('submit', (e) => {
+      // Gera o código do cupom ANTES do envio
+      const cpfLimpo = cpfInput.value.replace(/\D/g, '');
+      const hashSimples = (parseInt(cpfLimpo.substr(0, 9)) % 10000).toString().padStart(4, '0');
+      const novoCodigo = `QDBHP${hashSimples}`;
+      
+      // Coloca o código no campo escondido para o Netlify salvar
+      cupomHiddenInput.value = novoCodigo;
+
+      // Salva o cupom no navegador e mostra a tela de sucesso IMEDIATAMENTE
+      // Não precisamos esperar o envio, o Netlify cuida disso em segundo plano
+      localStorage.setItem('meuCupomQDBHP', novoCodigo);
+      formWrapper.classList.add('hidden');
+      voucherCodeDisplay.textContent = novoCodigo;
+      voucherScreen.classList.remove('hidden');
+
+      // Impede o recarregamento da página por um instante para a transição ser suave
+      e.preventDefault();
+
+      // Envia o formulário para o Netlify após um pequeno atraso
+      setTimeout(() => {
+        e.target.submit();
+      }, 100);
+    });
   </script>
 
 </body>
 </html>
-
-
-
-
 
 
 
