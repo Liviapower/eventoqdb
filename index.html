@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>Resgate Promoção Harry Potter</title>
   <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     /* SEU CSS ATUAL - INTACTO */
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -28,7 +29,6 @@
 
   <div id="tela-inicial"><div id="carta-imagem"></div></div>
   
-  <!-- Formulário que redireciona para a página de voucher -->
   <form name="promoForm" data-netlify="true" action="/voucher.html" class="form-wrapper hidden">
     <input type="hidden" name="CUPOM" id="cupom-hidden-input">
     
@@ -53,16 +53,13 @@
     const submitButton = document.getElementById('submit-button');
     const cupomHiddenInput = document.getElementById('cupom-hidden-input');
 
-    // Lógica para pular direto para o voucher se já tiver um
     document.addEventListener('DOMContentLoaded', () => {
       const cupomSalvo = localStorage.getItem('meuCupomQDBHP');
       if (cupomSalvo) {
-        // Redireciona para a página do voucher com o cupom salvo
         window.location.href = `/voucher.html?cupom=${cupomSalvo}`;
       }
     });
 
-    // Lógica da animação
     telaInicial.addEventListener('click', () => {
       telaInicial.style.opacity = '0';
       setTimeout(() => { telaInicial.classList.add('hidden'); }, 500);
@@ -75,23 +72,24 @@
       }, 1000);
     });
 
-    // Lógica de validação
-    function validarCPF(cpf) { /* ... sua função de validarCPF aqui ... */ return true; }
+    function validarCPF(cpf) { cpf = cpf.replace(/[^\d]+/g, ''); if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false; let soma = 0; for (let i = 1; i <= 9; i++) soma += parseInt(cpf.substring(i - 1, i)) * (11 - i); let resto = (soma * 10) % 11; if (resto === 10 || resto === 11) resto = 0; if (resto !== parseInt(cpf.substring(9, 10))) return false; soma = 0; for (let i = 1; i <= 10; i++) soma += parseInt(cpf.substring(i - 1, i)) * (12 - i); resto = (soma * 10) % 11; if (resto === 10 || resto === 11) resto = 0; if (resto !== parseInt(cpf.substring(10, 11))) return false; return true; }
     function checkFormValidity() { submitButton.disabled = !(nomeInput.value.trim() !== '' && validarCPF(cpfInput.value) && politicaCheckbox.checked); }
     [nomeInput, cpfInput, politicaCheckbox].forEach(el => el.addEventListener('input', checkFormValidity));
     
-    // Lógica que gera o cupom ANTES do envio
+    // CORREÇÃO FINAL AQUI
     form.addEventListener('submit', () => {
+      submitButton.disabled = true;
       const cpfLimpo = cpfInput.value.replace(/\D/g, '');
       const hashSimples = (parseInt(cpfLimpo.substr(0, 9)) % 10000).toString().padStart(4, '0');
       const novoCodigo = `QDBHP${hashSimples}`;
+      
+      // Coloca o código no campo escondido para o Netlify salvar
       cupomHiddenInput.value = novoCodigo;
+      
+      // Adiciona o cupom na action para que ele vá para a URL da próxima página
+      form.action = `/voucher.html?cupom=${novoCodigo}`;
     });
   </script>
 
 </body>
 </html>
-
-</html>
-
-
