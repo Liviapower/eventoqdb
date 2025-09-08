@@ -9,7 +9,7 @@
     /* SEU CSS ATUAL - INTACTO */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { min-height: 100vh; display: flex; justify-content: center; align-items: center; font-family: 'circular', sans-serif; background: url('estrelado.jpg') no-repeat center center; background-size: cover; background-attachment: fixed; overflow: hidden; }
-    .hidden { visibility: hidden; opacity: 0; pointer-events: none; transition: visibility 0s 0.5s, opacity 0.5s ease; }
+    .hidden { display: none !important; } /* Usando display:none para garantir que não ocupe espaço */
     #tela-inicial { position: fixed; inset: 0; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 10000; transition: opacity 0.5s ease; }
     #carta-imagem { height: 80vh; aspect-ratio: 3/4; background: url('hp.png') no-repeat center center/contain; border: none; transition: transform 0.3s ease; }
     #tela-inicial:hover #carta-imagem { transform: scale(1.02); }
@@ -38,15 +38,18 @@
 </head>
 <body>
 
-  <!-- SEU HTML - INTACTO -->
   <div id="tela-inicial"><div id="carta-imagem"></div></div>
   
-  <!-- MUDANÇA 1: Adicionado "action" ao formulário para evitar o redirecionamento do Netlify -->
-  <form id="promoForm" name="promoForm" data-netlify="true" action="/?success=true" class="form-wrapper hidden">
-    <h1>Resgate seu Cupom</h1>
-    <!-- MUDANÇA 2: Adicionado campo para o Cupom ser salvo no Netlify -->
+  <!-- CORREÇÃO FINAL AQUI -->
+  <form id="promoForm" name="promoForm" data-netlify="true" data-netlify-honeypot="bot-field" class="form-wrapper hidden">
+    <!-- Campo escondido para o Netlify saber o nome do formulário -->
+    <input type="hidden" name="form-name" value="promoForm" />
+    <!-- Campo escondido para enganar robôs (honeypot) -->
+    <p class="hidden"><label>Não preencha isto se você for humano: <input name="bot-field" /></label></p>
+    <!-- Campo escondido para o Cupom -->
     <input type="hidden" name="CUPOM" id="cupom-hidden-input">
     
+    <h1>Resgate seu Cupom</h1>
     <label for="nome">Nome completo *</label>
     <input type="text" id="nome" name="NOME" required>
     <label for="cpf">CPF *</label>
@@ -70,7 +73,7 @@
   <script>
     // --- SELETORES DE ELEMENTOS ---
     const telaInicial = document.getElementById('tela-inicial');
-    const formWrapper = document.getElementById('promoForm'); // Agora o form é o wrapper
+    const formWrapper = document.getElementById('promoForm');
     const voucherScreen = document.getElementById('voucher-screen');
     const voucherCodeDisplay = document.getElementById('voucher-code-display');
     const form = document.getElementById('promoForm');
@@ -105,43 +108,43 @@
       }, 1000);
     });
 
-    // --- FUNÇÕES DE VALIDAÇÃO (SEM ALTERAÇÃO) ---
+    // --- FUNÇÕES DE VALIDAÇÃO ---
     cpfInput.addEventListener('input', (e) => { let v=e.target.value.replace(/\D/g,''); v=v.replace(/(\d{3})(\d)/,'$1.$2'); v=v.replace(/(\d{3})(\d)/,'$1.$2'); v=v.replace(/(\d{3})(\d{1,2})$/,'$1-$2'); e.target.value=v; validarCPF(v); checkFormValidity(); });
     function validarCPF(c){c=c.replace(/[^\d]+/g,'');cpfInput.classList.remove('valid','invalid');if(c.length!==11||/^(\d)\1+$/.test(c)){if(c.length>0)cpfInput.classList.add('invalid');return!1}let s=0,r;for(let i=1;i<=9;i++)s+=parseInt(c.substring(i-1,i))*(11-i);r=(s*10)%11;if(r===10||r===11)r=0;if(r!==parseInt(c.substring(9,10))){cpfInput.classList.add('invalid');return!1}s=0;for(let i=1;i<=10;i++)s+=parseInt(c.substring(i-1,i))*(12-i);r=(s*10)%11;if(r===10||r===11)r=0;if(r!==parseInt(c.substring(10,11))){cpfInput.classList.add('invalid');return!1}cpfInput.classList.add('valid');return!0}
     function checkFormValidity(){const a=nomeInput.value.trim()!=='',b=validarCPF(cpfInput.value),c=politicaCheckbox.checked;submitButton.disabled=!(a&&b&&c)}
     nomeInput.addEventListener('input',checkFormValidity);politicaCheckbox.addEventListener('change',checkFormValidity);
 
-    // --- MUDANÇA 3: NOVA LÓGICA DE ENVIO PARA O NETLIFY ---
+    // --- LÓGICA DE ENVIO PARA O NETLIFY ---
     form.addEventListener('submit', (e) => {
-      // Gera o código do cupom ANTES do envio
+      e.preventDefault(); // Impede o envio padrão do formulário
+
+      // Gera o código do cupom
       const cpfLimpo = cpfInput.value.replace(/\D/g, '');
       const hashSimples = (parseInt(cpfLimpo.substr(0, 9)) % 10000).toString().padStart(4, '0');
       const novoCodigo = `QDBHP${hashSimples}`;
       
-      // Coloca o código no campo escondido para o Netlify salvar
+      // Coloca o código no campo escondido
       cupomHiddenInput.value = novoCodigo;
 
-      // Salva o cupom no navegador e mostra a tela de sucesso IMEDIATAMENTE
-      // Não precisamos esperar o envio, o Netlify cuida disso em segundo plano
+      // Prepara os dados para o envio em segundo plano
+      const formData = new FormData(form);
+      const formBody = new URLSearchParams(formData).toString();
+
+      // Envia os dados para o Netlify em segundo plano
+      fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: formBody
+      }).catch(error => console.error('Erro ao enviar para o Netlify:', error));
+
+      // Mostra a tela de sucesso para o usuário IMEDIATAMENTE
       localStorage.setItem('meuCupomQDBHP', novoCodigo);
       formWrapper.classList.add('hidden');
       voucherCodeDisplay.textContent = novoCodigo;
       voucherScreen.classList.remove('hidden');
-
-      // Impede o recarregamento da página por um instante para a transição ser suave
-      e.preventDefault();
-
-      // Envia o formulário para o Netlify após um pequeno atraso
-      setTimeout(() => {
-        e.target.submit();
-      }, 100);
     });
   </script>
 
 </body>
 </html>
-
-
-
-
 
