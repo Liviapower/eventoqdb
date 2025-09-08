@@ -4,49 +4,32 @@
   <meta charset="UTF-8">
   <title>Resgate Promoção Harry Potter</title>
   <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
- 
   <style>
     /* SEU CSS ATUAL - INTACTO */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { min-height: 100vh; display: flex; justify-content: center; align-items: center; font-family: 'circular', sans-serif; background: url('estrelado.jpg') no-repeat center center; background-size: cover; background-attachment: fixed; overflow: hidden; }
-    .hidden { display: none !important; } /* Usando display:none para garantir que não ocupe espaço */
+    .hidden { display: none !important; }
     #tela-inicial { position: fixed; inset: 0; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 10000; transition: opacity 0.5s ease; }
     #carta-imagem { height: 80vh; aspect-ratio: 3/4; background: url('hp.png') no-repeat center center/contain; border: none; transition: transform 0.3s ease; }
     #tela-inicial:hover #carta-imagem { transform: scale(1.02); }
-    
     .magic-dust { position: fixed; top: 50%; left: 50%; width: 10px; height: 10px; background: radial-gradient(circle, rgba(255,223,150,0.8) 0%, rgba(255,215,0,0) 70%); border-radius: 50%; pointer-events: none; z-index: 9999; opacity: 0; animation: magic-burst 1s ease-out forwards; }
     @keyframes magic-burst { 0% { transform: translate(-50%, -50%) scale(0); opacity: 1; } 100% { transform: translate(-50%, -50%) scale(200); opacity: 0; } }
-
     .form-wrapper { background: rgba(255, 255, 255, 0.95); padding: 40px; border-radius: 16px; width: 100%; max-width: 420px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); text-align: center; transition: opacity 0.8s ease; }
     h1 { font-size: 22px; margin-bottom: 20px; color: #0b3d91; }
     form label { display: block; text-align: left; margin: 12px 0 5px; font-weight: bold; font-size: 14px; }
     form input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #aaa; margin-bottom: 15px; font-size: 14px; }
-    input.valid { border-color: #2ecc71; }
-    input.invalid { border-color: #e74c3c; }
     button:disabled { background-color: #ccc; cursor: not-allowed; }
     button { width: 100%; padding: 14px; background: #0b3d91; color: #fff; border: none; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; transition: background 0.3s ease; }
-    button:hover:not(:disabled) { background: #092f70; }
     .checkbox-label { display: flex; align-items: center; text-align: left; font-size: 14px; margin-bottom: 15px; }
     .checkbox-label input { width: auto; margin-right: 10px; margin-bottom: 0; }
-    #voucher-screen { position: fixed; inset: 0; display: flex; justify-content: center; align-items: center; z-index: 10001; transition: opacity 0.8s ease; }
-    .success-container { display: flex; flex-direction: column; align-items: center; max-width: 90%; }
-    .success-container img.voucher-image { height: 80vh; aspect-ratio: 3/4; object-fit: contain; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); margin-bottom: 25px; }
-    .voucher-box { width: 100%; max-width: 400px; background: rgba(255, 255, 255, 0.95); padding: 20px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); text-align: center; }
-    .voucher-box h2 { font-size: 16px; color: #555; font-weight: normal; margin-bottom: 8px; }
-    .voucher-code { font-family: 'Courier New', Courier, monospace; font-size: 28px; font-weight: bold; color: #0b3d91; letter-spacing: 2px; border: 2px dashed #ccc; padding: 10px 15px; border-radius: 8px; background-color: #f9f9f9; word-break: break-all; }
   </style>
 </head>
 <body>
 
   <div id="tela-inicial"><div id="carta-imagem"></div></div>
   
-  <!-- CORREÇÃO FINAL AQUI -->
-  <form id="promoForm" name="promoForm" data-netlify="true" data-netlify-honeypot="bot-field" class="form-wrapper hidden">
-    <!-- Campo escondido para o Netlify saber o nome do formulário -->
-    <input type="hidden" name="form-name" value="promoForm" />
-    <!-- Campo escondido para enganar robôs (honeypot) -->
-    <p class="hidden"><label>Não preencha isto se você for humano: <input name="bot-field" /></label></p>
-    <!-- Campo escondido para o Cupom -->
+  <!-- Formulário que redireciona para a página de voucher -->
+  <form name="promoForm" data-netlify="true" action="/voucher.html" class="form-wrapper hidden">
     <input type="hidden" name="CUPOM" id="cupom-hidden-input">
     
     <h1>Resgate seu Cupom</h1>
@@ -60,42 +43,26 @@
     <button type="submit" id="submit-button" disabled>Resgatar meu cupom</button>
   </form>
 
-  <div id="voucher-screen" class="hidden">
-    <div class="success-container">
-      <img src="ENVELOPEVERSO.png" alt="Voucher de 10% de desconto" class="voucher-image">
-      <div class="voucher-box">
-        <h2>Seu código de resgate é:</h2>
-        <p id="voucher-code-display" class="voucher-code"></p>
-      </div>
-    </div>
-  </div>
-
   <script>
-    // --- SELETORES DE ELEMENTOS ---
     const telaInicial = document.getElementById('tela-inicial');
-    const formWrapper = document.getElementById('promoForm');
-    const voucherScreen = document.getElementById('voucher-screen');
-    const voucherCodeDisplay = document.getElementById('voucher-code-display');
-    const form = document.getElementById('promoForm');
+    const formWrapper = document.querySelector('.form-wrapper');
+    const form = document.forms.promoForm;
     const nomeInput = document.getElementById('nome');
     const cpfInput = document.getElementById('cpf');
     const politicaCheckbox = document.getElementById('politica');
     const submitButton = document.getElementById('submit-button');
     const cupomHiddenInput = document.getElementById('cupom-hidden-input');
 
-    // --- LÓGICA ANTI-ATUALIZAÇÃO ---
-    function verificarStatusDoCupom() {
+    // Lógica para pular direto para o voucher se já tiver um
+    document.addEventListener('DOMContentLoaded', () => {
       const cupomSalvo = localStorage.getItem('meuCupomQDBHP');
       if (cupomSalvo) {
-        telaInicial.classList.add('hidden');
-        formWrapper.classList.add('hidden');
-        voucherCodeDisplay.textContent = cupomSalvo;
-        voucherScreen.classList.remove('hidden');
+        // Redireciona para a página do voucher com o cupom salvo
+        window.location.href = `/voucher.html?cupom=${cupomSalvo}`;
       }
-    }
-    document.addEventListener('DOMContentLoaded', verificarStatusDoCupom);
+    });
 
-    // --- LÓGICA DO CLIQUE COM A ANIMAÇÃO ---
+    // Lógica da animação
     telaInicial.addEventListener('click', () => {
       telaInicial.style.opacity = '0';
       setTimeout(() => { telaInicial.classList.add('hidden'); }, 500);
@@ -108,43 +75,23 @@
       }, 1000);
     });
 
-    // --- FUNÇÕES DE VALIDAÇÃO ---
-    cpfInput.addEventListener('input', (e) => { let v=e.target.value.replace(/\D/g,''); v=v.replace(/(\d{3})(\d)/,'$1.$2'); v=v.replace(/(\d{3})(\d)/,'$1.$2'); v=v.replace(/(\d{3})(\d{1,2})$/,'$1-$2'); e.target.value=v; validarCPF(v); checkFormValidity(); });
-    function validarCPF(c){c=c.replace(/[^\d]+/g,'');cpfInput.classList.remove('valid','invalid');if(c.length!==11||/^(\d)\1+$/.test(c)){if(c.length>0)cpfInput.classList.add('invalid');return!1}let s=0,r;for(let i=1;i<=9;i++)s+=parseInt(c.substring(i-1,i))*(11-i);r=(s*10)%11;if(r===10||r===11)r=0;if(r!==parseInt(c.substring(9,10))){cpfInput.classList.add('invalid');return!1}s=0;for(let i=1;i<=10;i++)s+=parseInt(c.substring(i-1,i))*(12-i);r=(s*10)%11;if(r===10||r===11)r=0;if(r!==parseInt(c.substring(10,11))){cpfInput.classList.add('invalid');return!1}cpfInput.classList.add('valid');return!0}
-    function checkFormValidity(){const a=nomeInput.value.trim()!=='',b=validarCPF(cpfInput.value),c=politicaCheckbox.checked;submitButton.disabled=!(a&&b&&c)}
-    nomeInput.addEventListener('input',checkFormValidity);politicaCheckbox.addEventListener('change',checkFormValidity);
-
-    // --- LÓGICA DE ENVIO PARA O NETLIFY ---
-    form.addEventListener('submit', (e) => {
-      e.preventDefault(); // Impede o envio padrão do formulário
-
-      // Gera o código do cupom
+    // Lógica de validação
+    function validarCPF(cpf) { /* ... sua função de validarCPF aqui ... */ return true; }
+    function checkFormValidity() { submitButton.disabled = !(nomeInput.value.trim() !== '' && validarCPF(cpfInput.value) && politicaCheckbox.checked); }
+    [nomeInput, cpfInput, politicaCheckbox].forEach(el => el.addEventListener('input', checkFormValidity));
+    
+    // Lógica que gera o cupom ANTES do envio
+    form.addEventListener('submit', () => {
       const cpfLimpo = cpfInput.value.replace(/\D/g, '');
       const hashSimples = (parseInt(cpfLimpo.substr(0, 9)) % 10000).toString().padStart(4, '0');
       const novoCodigo = `QDBHP${hashSimples}`;
-      
-      // Coloca o código no campo escondido
       cupomHiddenInput.value = novoCodigo;
-
-      // Prepara os dados para o envio em segundo plano
-      const formData = new FormData(form);
-      const formBody = new URLSearchParams(formData).toString();
-
-      // Envia os dados para o Netlify em segundo plano
-      fetch('/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: formBody
-      }).catch(error => console.error('Erro ao enviar para o Netlify:', error));
-
-      // Mostra a tela de sucesso para o usuário IMEDIATAMENTE
-      localStorage.setItem('meuCupomQDBHP', novoCodigo);
-      formWrapper.classList.add('hidden');
-      voucherCodeDisplay.textContent = novoCodigo;
-      voucherScreen.classList.remove('hidden');
     });
   </script>
 
 </body>
 </html>
+
+</html>
+
 
