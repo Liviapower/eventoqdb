@@ -11,7 +11,7 @@
     body { min-height: 100vh; display: flex; justify-content: center; align-items: center; font-family: 'circular', sans-serif; background: url('estrelado.jpg') no-repeat center center; background-size: cover; background-attachment: fixed; overflow: hidden; }
     .hidden { visibility: hidden; opacity: 0; pointer-events: none; transition: visibility 0s 0.5s, opacity 0.5s ease; }
     #tela-inicial { position: fixed; inset: 0; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 10000; transition: opacity 0.5s ease; }
-    #carta-imagem { height: 80vh; aspect-ratio: 3/4; background: url('./images/hp.png') no-repeat center center/contain; border: none; transition: transform 0.3s ease; }
+    #carta-imagem { height: 80vh; aspect-ratio: 3/4; background: url('hp.png') no-repeat center center/contain; border: none; transition: transform 0.3s ease; }
     #tela-inicial:hover #carta-imagem { transform: scale(1.02); }
     #animacao { position: fixed; inset: 0; display: flex; justify-content: center; align-items: center; background: transparent; z-index: 9999; height: 80vh; width: calc(80vh * (3/4)); opacity: 0; transition: all 1s ease-in-out; }
     #animacao.expandir { height: 100vh; width: 100vw; opacity: 1; }
@@ -108,7 +108,7 @@
 
     // --- LÓGICA DE ENVIO FINAL E CORRIGIDA ---
     // !!! COLE O SEU URL DO APPS SCRIPT AQUI DENTRO DAS ASPAS !!!
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbyWK6US549Nf_MJrkucELgM88itCtQuckTMqaIrzD22JJzp_FRDnfaEC_YhDrXpjrE0/exec';
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbzv9kzU8GLDprATQGU_Beo97lFSKOiQ4lm0tr2UVjdeLVoamxkpJRUz29DNYtvs-Q4t/exec';
 
     form.addEventListener('submit', (e) => {
       e.preventDefault();
@@ -162,6 +162,7 @@
 
 </body>
 </html>
+
 
 
 
