@@ -6,16 +6,34 @@
   <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
  
   <style>
-    /* Seu CSS completo e perfeito permanece aqui */
+    /* SEU CSS - INTACTO */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { min-height: 100vh; display: flex; justify-content: center; align-items: center; font-family: 'circular', sans-serif; background: url('estrelado.jpg') no-repeat center center; background-size: cover; background-attachment: fixed; overflow: hidden; }
     .hidden { visibility: hidden; opacity: 0; pointer-events: none; transition: visibility 0s 0.5s, opacity 0.5s ease; }
     #tela-inicial { position: fixed; inset: 0; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 10000; transition: opacity 0.5s ease; }
     #carta-imagem { height: 80vh; aspect-ratio: 3/4; background: url('hp.png') no-repeat center center/contain; border: none; transition: transform 0.3s ease; }
     #tela-inicial:hover #carta-imagem { transform: scale(1.02); }
-    #animacao { position: fixed; inset: 0; display: flex; justify-content: center; align-items: center; background: transparent; z-index: 9999; height: 80vh; width: calc(80vh * (3/4)); opacity: 0; transition: all 1s ease-in-out; }
-    #animacao.expandir { height: 100vh; width: 100vw; opacity: 1; }
-    #animacao img { width: 100%; height: 100%; object-fit: contain; }
+    
+    /* NOVO: Estilos para a animação de brilhos */
+    .sparkle {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      background-color: #ffd700; /* Cor dourada */
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0;
+      /* Animação que faz o brilho aparecer e sumir */
+      animation: sparkle-animation 0.8s ease-out;
+    }
+    @keyframes sparkle-animation {
+      0% { transform: scale(0.5) translate(0, 0); opacity: 0.5; }
+      50% { transform: scale(1.2) translate(10px, -10px); opacity: 1; }
+      100% { transform: scale(0) translate(20px, -20px); opacity: 0; }
+    }
+
+    /* Resto do seu CSS - INTACTO */
     .form-wrapper { background: rgba(255, 255, 255, 0.95); padding: 40px; border-radius: 16px; width: 100%; max-width: 420px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); text-align: center; transition: opacity 0.8s ease; }
     h1 { font-size: 22px; margin-bottom: 20px; color: #0b3d91; }
     form label { display: block; text-align: left; margin: 12px 0 5px; font-weight: bold; font-size: 14px; }
@@ -37,7 +55,7 @@
 </head>
 <body>
 
-  <!-- HTML sem alterações -->
+  <!-- SEU HTML - INTACTO -->
   <div id="tela-inicial"><div id="carta-imagem"></div></div>
   <div id="form-wrapper" class="form-wrapper hidden">
     <h1>Resgate seu Cupom</h1>
@@ -68,7 +86,7 @@
     const formWrapper = document.getElementById('form-wrapper');
     const voucherScreen = document.getElementById('voucher-screen');
     const voucherCodeDisplay = document.getElementById('voucher-code-display');
-    const duracaoGif = 5000;
+    // const duracaoGif = 5000; // Removido
     const form = document.getElementById('promoForm');
     const nomeInput = document.getElementById('nome');
     const cpfInput = document.getElementById('cpf');
@@ -81,23 +99,45 @@
       if (cupomSalvo) {
         telaInicial.classList.add('hidden');
         formWrapper.classList.add('hidden');
-        animacao.classList.add('hidden');
+        // CORREÇÃO: Removida a linha que causava o erro
+        // animacao.classList.add('hidden'); 
         voucherCodeDisplay.textContent = cupomSalvo;
         voucherScreen.classList.remove('hidden');
       }
     }
     document.addEventListener('DOMContentLoaded', verificarStatusDoCupom);
 
-    // --- LÓGICA DO FLUXO NORMAL (CLIQUE NA CARTA) ---
-    telaInicial.addEventListener('click', () => {
-      telaInicial.classList.add('hidden');
-      animacao.classList.remove('hidden');
-      void animacao.offsetWidth;
-      animacao.classList.add('expandir');
+    // --- LÓGICA DO FLUXO NORMAL (CLIQUE NA CARTA) COM BRILHOS ---
+    telaInicial.addEventListener('click', (e) => {
+      // 1. Esconde a carta para a transição
+      telaInicial.style.opacity = '0';
       setTimeout(() => {
-        animacao.classList.add('hidden');
+        telaInicial.classList.add('hidden');
+      }, 500);
+
+      // 2. Cria os brilhos
+      for (let i = 0; i < 20; i++) { // Aumentei para 20 brilhos
+        const sparkle = document.createElement('div');
+        sparkle.className = 'sparkle';
+        
+        // Posiciona perto do clique com aleatoriedade
+        const offsetX = (Math.random() - 0.5) * 200;
+        const offsetY = (Math.random() - 0.5) * 200;
+        sparkle.style.left = `${e.clientX + offsetX}px`;
+        sparkle.style.top = `${e.clientY + offsetY}px`;
+        
+        document.body.appendChild(sparkle);
+        
+        // Remove o brilho depois que a animação termina
+        setTimeout(() => {
+          sparkle.remove();
+        }, 800);
+      }
+
+      // 3. Mostra o formulário após um pequeno atraso
+      setTimeout(() => {
         formWrapper.classList.remove('hidden');
-      }, duracaoGif);
+      }, 600); // Atraso um pouco maior para dar tempo dos brilhos aparecerem
     });
 
     // --- FUNÇÕES DE VALIDAÇÃO (SEM ALTERAÇÃO) ---
@@ -106,34 +146,23 @@
     function checkFormValidity(){const a=nomeInput.value.trim()!=='',b=validarCPF(cpfInput.value),c=politicaCheckbox.checked;submitButton.disabled=!(a&&b&&c)}
     nomeInput.addEventListener('input',checkFormValidity);politicaCheckbox.addEventListener('change',checkFormValidity);
 
-    // --- LÓGICA DE ENVIO FINAL E CORRIGIDA ---
-    // !!! COLE O SEU URL DO APPS SCRIPT AQUI DENTRO DAS ASPAS !!!
+    // --- LÓGICA DE ENVIO FINAL E CORRIGIDA (SEM ALTERAÇÃO) ---
     const scriptURL = 'https://script.google.com/macros/s/AKfycbzv9kzU8GLDprATQGU_Beo97lFSKOiQ4lm0tr2UVjdeLVoamxkpJRUz29DNYtvs-Q4t/exec';
-
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', (e ) => {
       e.preventDefault();
       if (submitButton.disabled) return;
-
       submitButton.disabled = true;
       submitButton.textContent = 'Enviando...';
-
-      // --- MUDANÇA CRUCIAL AQUI ---
-      // Criamos o FormData manualmente para garantir os nomes dos campos
       const formData = new FormData();
       const cpfLimpo = cpfInput.value.replace(/\D/g, '');
       const hashSimples = (parseInt(cpfLimpo.substr(0, 9)) % 10000).toString().padStart(4, '0');
       const novoCodigo = `QDBHP${hashSimples}`;
-     
-      formData.append('CPF', cpfInput.value); // O Apps Script espera 'CPF'
-      formData.append('NOME', nomeInput.value); // O Apps Script espera 'NOME'
-      formData.append('CUPOM', novoCodigo); // O Apps Script espera 'CUPOM'
-
+      formData.append('CPF', cpfInput.value);
+      formData.append('NOME', nomeInput.value);
+      formData.append('CUPOM', novoCodigo);
       fetch(scriptURL, { method: 'POST', body: formData})
         .then(response => {
-            if (!response.ok) {
-                // Se a resposta não for OK (ex: 404, 500), lança um erro
-                throw new Error(`Erro de rede: ${response.statusText}`);
-            }
+            if (!response.ok) { throw new Error(`Erro de rede: ${response.statusText}`); }
             return response.json();
         })
         .then(data => {
@@ -146,10 +175,7 @@
             alert('Este CPF já foi cadastrado e possui um cupom.');
             submitButton.disabled = false;
             submitButton.textContent = 'Resgatar meu cupom';
-          } else {
-            // Se o script retornou um erro que não é 'CPF_EXISTS'
-            throw new Error(data.error || 'Erro desconhecido retornado pelo script.');
-          }
+          } else { throw new Error(data.error || 'Erro desconhecido retornado pelo script.'); }
         })
         .catch(error => {
           console.error('Erro detalhado:', error);
@@ -162,9 +188,6 @@
 
 </body>
 </html>
-
-
-
 
 
 
