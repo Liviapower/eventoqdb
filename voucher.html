@@ -4,18 +4,19 @@
   <meta charset="UTF-8">
   <title>Seu Voucher Chegou!</title>
   <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    /* Estilos essenciais para a página do voucher */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { min-height: 100vh; display: flex; justify-content: center; align-items: center; font-family: 'circular', sans-serif; background: url('estrelado.jpg') no-repeat center center; background-size: cover; background-attachment: fixed; overflow: hidden; }
     
     #voucher-screen { position: fixed; inset: 0; display: flex; justify-content: center; align-items: center; z-index: 10001; }
     .success-container { display: flex; flex-direction: column; align-items: center; max-width: 90%; }
     
-    /* AJUSTE DE TAMANHO AQUI */
+    /* CORREÇÃO DE TAMANHO PARA MOBILE */
     .success-container img.voucher-image {
-      height: 80vh; /* Mesma altura da carta inicial */
-      aspect-ratio: 3/4;
+      height: 80vh; /* Ocupa 80% da altura da tela */
+      width: auto;   /* Largura se ajusta para manter a proporção */
+      max-width: 100%; /* Garante que não ultrapasse a largura da tela */
       object-fit: contain;
       border-radius: 16px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.4);
