@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <title>Resgate Promoção Harry Potter</title>
-  <link rel="icon" type="image/png" sizes="32x32" href="./images/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
  
   <style>
     /* Seu CSS completo e perfeito permanece aqui */
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { min-height: 100vh; display: flex; justify-content: center; align-items: center; font-family: 'circular', sans-serif; background: url('./images/estrelado.jpg') no-repeat center center; background-size: cover; background-attachment: fixed; overflow: hidden; }
+    body { min-height: 100vh; display: flex; justify-content: center; align-items: center; font-family: 'circular', sans-serif; background: url('estrelado.jpg') no-repeat center center; background-size: cover; background-attachment: fixed; overflow: hidden; }
     .hidden { visibility: hidden; opacity: 0; pointer-events: none; transition: visibility 0s 0.5s, opacity 0.5s ease; }
     #tela-inicial { position: fixed; inset: 0; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 10000; transition: opacity 0.5s ease; }
     #carta-imagem { height: 80vh; aspect-ratio: 3/4; background: url('./images/hp.png') no-repeat center center/contain; border: none; transition: transform 0.3s ease; }
@@ -39,7 +39,6 @@
 
   <!-- HTML sem alterações -->
   <div id="tela-inicial"><div id="carta-imagem"></div></div>
-  <div id="animacao" class="hidden"><img src="./images/qdb.hp.animacao.carta.gif" alt="Animação"></div>
   <div id="form-wrapper" class="form-wrapper hidden">
     <h1>Resgate seu Cupom</h1>
     <form id="promoForm">
@@ -55,7 +54,7 @@
   </div>
   <div id="voucher-screen" class="hidden">
     <div class="success-container">
-      <img src="./images/ENVELOPEVERSO.png" alt="Voucher de 10% de desconto" class="voucher-image">
+      <img src="ENVELOPEVERSO.png" alt="Voucher de 10% de desconto" class="voucher-image">
       <div class="voucher-box">
         <h2>Seu código de resgate é:</h2>
         <p id="voucher-code-display" class="voucher-code"></p>
@@ -66,7 +65,6 @@
   <script>
     // --- LÓGICA DE UI E VALIDAÇÃO ---
     const telaInicial = document.getElementById('tela-inicial');
-    const animacao = document.getElementById('animacao');
     const formWrapper = document.getElementById('form-wrapper');
     const voucherScreen = document.getElementById('voucher-screen');
     const voucherCodeDisplay = document.getElementById('voucher-code-display');
@@ -164,6 +162,7 @@
 
 </body>
 </html>
+
 
 
 
