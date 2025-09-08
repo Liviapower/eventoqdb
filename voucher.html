@@ -8,10 +8,20 @@
     /* Estilos essenciais para a página do voucher */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { min-height: 100vh; display: flex; justify-content: center; align-items: center; font-family: 'circular', sans-serif; background: url('estrelado.jpg') no-repeat center center; background-size: cover; background-attachment: fixed; overflow: hidden; }
-    .hidden { display: none !important; }
+    
     #voucher-screen { position: fixed; inset: 0; display: flex; justify-content: center; align-items: center; z-index: 10001; }
     .success-container { display: flex; flex-direction: column; align-items: center; max-width: 90%; }
-    .success-container img.voucher-image { height: 80vh; aspect-ratio: 3/4; object-fit: contain; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); margin-bottom: 25px; }
+    
+    /* AJUSTE DE TAMANHO AQUI */
+    .success-container img.voucher-image {
+      height: 80vh; /* Mesma altura da carta inicial */
+      aspect-ratio: 3/4;
+      object-fit: contain;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      margin-bottom: 25px;
+    }
+
     .voucher-box { width: 100%; max-width: 400px; background: rgba(255, 255, 255, 0.95); padding: 20px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); text-align: center; }
     .voucher-box h2 { font-size: 16px; color: #555; font-weight: normal; margin-bottom: 8px; }
     .voucher-code { font-family: 'Courier New', Courier, monospace; font-size: 28px; font-weight: bold; color: #0b3d91; letter-spacing: 2px; border: 2px dashed #ccc; padding: 10px 15px; border-radius: 8px; background-color: #f9f9f9; word-break: break-all; }
@@ -31,19 +41,14 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // Pega os parâmetros da URL
       const params = new URLSearchParams(window.location.search);
-      
-      // CORREÇÃO AQUI: Procura por 'cupom' com letra minúscula
+      // CORREÇÃO: Procura por 'cupom' com letra minúscula
       const cupom = params.get('cupom');
 
       if (cupom) {
-        // Mostra o cupom na tela
         document.getElementById('voucher-code-display').textContent = cupom;
-        // Salva o cupom no localStorage para visitas futuras
         localStorage.setItem('meuCupomQDBHP', cupom);
       } else {
-        // Se não encontrar o cupom, mostra uma mensagem de erro amigável
         document.getElementById('voucher-code-display').textContent = 'Inválido';
       }
     });
